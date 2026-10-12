@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Quản Lý Thư Viện{% endblock %} - Hệ Thống Thư Viện</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <!-- Navigation Header -->
+  <header class="navbar">
+    <a href="/" class="brand">
+      <span class="brand-icon">📚</span>
+      <span>Thư Viện Tri Thức</span>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li class="nav-item">
+          <a href="/" class="{% if active_tab == 'dashboard' %}active{% endif %}">📊 Tổng Quan</a>
+        </li>
+        <li class="nav-item">
+          <a href="/books" class="{% if active_tab == 'books' %}active{% endif %}">📖 Quản Lý Sách</a>
+        </li>
+        <li class="nav-item">
+          <a href="/members" class="{% if active_tab == 'members' %}active{% endif %}">👥 Quản Lý Độc Giả</a>
+        </li>
+        <li class="nav-item">
+          <a href="/loans" class="{% if active_tab == 'loans' %}active{% endif %}">📝 Phiếu Mượn / Trả</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Notification Flash Messages -->
+  <main class="container">
+    {% if success_msg %}
+    <div class="alert alert-success" role="alert">
+      <span>✅ {{ success_msg }}</span>
+      <button class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+    </div>
+    {% endif %}
+
+    {% if error_msg %}
+    <div class="alert alert-error" role="alert">
+      <span>⚠️ {{ error_msg }}</span>
+      <button class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+    </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>© 2026 Hệ Thống Quản Lý Thư Viện - Đề tài môn Triển khai và Quản trị Hệ thống Phần mềm.</p>
+  </footer>
+
+  <script src="/static/js/main.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

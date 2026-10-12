@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Chỉnh Sửa Độc Giả' if is_edit else 'Thêm Độc Giả Mới' }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">{{ 'Chỉnh Sửa Độc Giả' if is_edit else 'Thêm Độc Giả Mới' }}</h1>
+    <p style="color: var(--text-muted); margin-top: 0.25rem;">Nhập thông tin cá nhân và thẻ thư viện độc giả</p>
+  </div>
+  <a href="/members" class="btn btn-secondary">&larr; Quay lại danh sách</a>
+</div>
+
+<div class="form-card">
+  <form action="{{ '/members/' ~ member.id ~ '/edit' if is_edit else '/members/create' }}" method="POST">
+    
+    <div class="form-grid-2">
+      <div class="form-group">
+        <label class="form-label" for="code">Mã Thẻ Độc Giả <span style="color: red;">*</span></label>
+        <input 
+          type="text" 
+          id="code" 
+          name="code" 
+          class="form-control" 
+          placeholder="Ví dụ: DG-001" 
+          value="{{ member.code if member else '' }}" 
+          required 
+          {{ 'readonly style="background-color: #f1f5f9; cursor: not-allowed;"' if is_edit else '' }}
+        >
+        <small style="color: var(--text-muted); font-size: 0.75rem;">Mã thẻ duy nhất</small>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="full_name">Họ Và Tên <span style="color: red;">*</span></label>
+        <input type="text" id="full_name" name="full_name" class="form-control" placeholder="Ví dụ: Nguyễn Văn An" value="{{ member.full_name if member else '' }}" required>
+      </div>
+    </div>
+
+    <div class="form-grid-2">
+      <div class="form-group">
+        <label class="form-label" for="email">Email <span style="color: red;">*</span></label>
+        <input type="email" id="email" name="email" class="form-control" placeholder="Ví dụ: an.nguyen@example.com" value="{{ member.email if member else '' }}" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="phone">Số Điện Thoại</label>
+        <input type="tel" id="phone" name="phone" class="form-control" placeholder="Ví dụ: 0912345678" value="{{ member.phone if member and member.phone else '' }}">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="address">Địa Chỉ Thường Trú</label>
+      <input type="text" id="address" name="address" class="form-control" placeholder="Ví dụ: 123 Đường Nguyễn Huệ, Quận 1, TP.HCM" value="{{ member.address if member and member.address else '' }}">
+    </div>
+
+    {% if is_edit %}
+    <div class="form-group">
+      <label class="form-label">Trạng Thái Thẻ Thư Viện</label>
+      <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+        <input type="checkbox" name="is_active" value="true" {{ 'checked' if member.is_active else '' }}>
+        <span>Kích hoạt (Cho phép mượn sách)</span>
+      </label>
+    </div>
+    {% endif %}
+
+    <div class="form-actions">
+      <a href="/members" class="btn btn-secondary">Hủy bỏ</a>
+      <button type="submit" class="btn btn-primary">{{ 'Lưu Thay Đổi' if is_edit else 'Lưu Độc Giả' }}</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

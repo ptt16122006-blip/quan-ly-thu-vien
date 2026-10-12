@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Quản Lý Sách{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Kho Sách Thư Viện</h1>
+    <p style="color: var(--text-muted); margin-top: 0.25rem;">Danh mục đầu sách, số lượng tồn kho và thông tin chi tiết</p>
+  </div>
+  <div class="header-actions">
+    <a href="/books/create" class="btn btn-primary">➕ Thêm Sách Mới</a>
+  </div>
+</div>
+
+<!-- Form Tìm Kiếm -->
+<form action="/books" method="GET" class="search-form">
+  <input 
+    type="text" 
+    name="search" 
+    class="search-input" 
+    placeholder="Tìm kiếm theo Tên sách, Tác giả, Mã sách (BK-xxx), ISBN hoặc Thể loại..." 
+    value="{{ search_query or '' }}"
+  >
+  <button type="submit" class="btn btn-secondary">🔍 Tìm Kiếm</button>
+  {% if search_query %}
+    <a href="/books" class="btn btn-secondary">Xóa tìm kiếm</a>
+  {% endif %}
+</form>
+
+<div class="table-card">
+  <div class="table-responsive">
+    <table>
+      <thead>
+        <tr>
+          <th>Mã Sách</th>
+          <th>Tên Sách</th>
+          <th>Tác Giả</th>
+          <th>Thể Loại</th>
+          <th>NXB / Năm</th>
+          <th>Kho (Còn / Tổng)</th>
+          <th>Hành Động</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if books %}
+          {% for book in books %}
+          <tr>
+            <td>
+              <strong>{{ book.code }}</strong>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">ISBN: {{ book.isbn }}</div>
+            </td>
+            <td>
+              <div style="font-weight: 600;">{{ book.title }}</div>
+              {% if book.description %}
+              <div style="font-size: 0.8rem; color: var(--text-muted); max-width: 280px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                {{ book.description }}
+              </div>
+              {% endif %}
+            </td>
+            <td>{{ book.author }}</td>
+            <td><span class="badge badge-secondary">{{ book.category }}</span></td>
+            <td>{{ book.publisher or '—' }} ({{ book.publish_year or '—' }})</td>
+            <td>
+              {% if book.available_quantity > 0 %}
+                <span class="badge badge-success">{{ book.available_quantity }} / {{ book.total_quantity }} cuốn</span>
+              {% else %}
+                <span class="badge badge-danger">Hết sách (0 / {{ book.total_quantity }})</span>
+              {% endif %}
+            </td>
+            <td>
+              <div style="display: flex; gap: 0.35rem;">
+                <a href="/books/{{ book.id }}/edit" class="btn btn-secondary btn-sm">✏️ Sửa</a>
+                <form action="/books/{{ book.id }}/delete" method="POST" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa cuốn sách \'{{ book.title }}\'?')">
+                  <button type="submit" class="btn btn-danger btn-sm">🗑️ Xóa</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+              Không tìm thấy sách nào phù hợp.
+            </td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

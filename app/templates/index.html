@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Trang Tổng Quan{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Bảng Điều Khiển Tổng Quan</h1>
+    <p style="color: var(--text-muted); margin-top: 0.25rem;">Thống kê tổng hợp số liệu hoạt động thư viện thời gian thực</p>
+  </div>
+  <div class="header-actions">
+    <a href="/loans/create" class="btn btn-primary">➕ Tạo Phiếu Mượn Mới</a>
+    <a href="/seed-data" class="btn btn-secondary" onclick="return confirm('Bạn có muốn nạp dữ liệu mẫu ban đầu? (Chỉ thêm nếu bảng còn trống)')">🔄 Nạp Dữ Liệu Mẫu</a>
+  </div>
+</div>
+
+<!-- 4 Thẻ Thống Kê Chính -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon icon-blue">📚</div>
+    <div class="stat-info">
+      <h3>Tổng Đầu Sách</h3>
+      <div class="stat-value">{{ stats.total_books }}</div>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon icon-green">👥</div>
+    <div class="stat-info">
+      <h3>Tổng Độc Giả</h3>
+      <div class="stat-value">{{ stats.total_members }}</div>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon icon-yellow">📖</div>
+    <div class="stat-info">
+      <h3>Đang Được Mượn</h3>
+      <div class="stat-value">{{ stats.borrowed_loans_count }} <span style="font-size: 0.95rem; font-weight: normal; color: var(--text-muted);">({{ stats.total_borrowed_copies }} cuốn)</span></div>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon icon-red">⏰</div>
+    <div class="stat-info">
+      <h3>Phiếu Quá Hạn</h3>
+      <div class="stat-value">{{ stats.overdue_loans_count }}</div>
+    </div>
+  </div>
+</div>
+
+<!-- Phiếu mượn gần đây -->
+<div class="page-header" style="margin-top: 2rem;">
+  <h2 style="font-size: 1.25rem; font-weight: 700;">Phiếu Mượn Gần Đây Nhất</h2>
+  <a href="/loans" class="btn btn-secondary btn-sm">Xem tất cả phiếu mượn &rarr;</a>
+</div>
+
+<div class="table-card">
+  <div class="table-responsive">
+    <table>
+      <thead>
+        <tr>
+          <th>Mã Phiếu</th>
+          <th>Độc Giả</th>
+          <th>Ngày Mượn</th>
+          <th>Hạn Trả</th>
+          <th>Trạng Thái</th>
+          <th>Hành Động</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if recent_loans %}
+          {% for loan in recent_loans %}
+          <tr>
+            <td><strong>{{ loan.loan_code }}</strong></td>
+            <td>{{ loan.member.full_name }} ({{ loan.member.code }})</td>
+            <td>{{ loan.borrow_date.strftime('%d/%m/%Y') }}</td>
+            <td>{{ loan.due_date.strftime('%d/%m/%Y') }}</td>
+            <td>
+              {% if loan.status == 'BORROWED' %}
+                <span class="badge badge-warning">Đang mượn</span>
+              {% elif loan.status == 'OVERDUE' %}
+                <span class="badge badge-danger">Quá hạn</span>
+              {% else %}
+                <span class="badge badge-success">Đã trả</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if loan.status != 'RETURNED' %}
+              <form action="/loans/{{ loan.id }}/return" method="POST" style="display:inline;" onsubmit="return confirm('Xác nhận trả sách cho phiếu {{ loan.loan_code }}?')">
+                <button type="submit" class="btn btn-primary btn-sm">📥 Trả sách</button>
+              </form>
+              {% else %}
+              <span style="color: var(--text-muted); font-size: 0.85rem;">Hoàn tất lúc {{ loan.return_date.strftime('%d/%m/%Y') if loan.return_date else '' }}</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+              Chưa có phiếu mượn nào. Hãy nhấn "Tạo Phiếu Mượn Mới" để bắt đầu!
+            </td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

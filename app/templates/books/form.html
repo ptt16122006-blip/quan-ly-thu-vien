@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Chỉnh Sửa Sách' if is_edit else 'Thêm Sách Mới' }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">{{ 'Chỉnh Sửa Sách' if is_edit else 'Thêm Sách Mới' }}</h1>
+    <p style="color: var(--text-muted); margin-top: 0.25rem;">Điền đầy đủ thông tin sách để lưu vào cơ sở dữ liệu</p>
+  </div>
+  <a href="/books" class="btn btn-secondary">&larr; Quay lại danh sách</a>
+</div>
+
+<div class="form-card">
+  <form action="{{ '/books/' ~ book.id ~ '/edit' if is_edit else '/books/create' }}" method="POST">
+    
+    <div class="form-grid-2">
+      <div class="form-group">
+        <label class="form-label" for="code">Mã Sách <span style="color: red;">*</span></label>
+        <input 
+          type="text" 
+          id="code" 
+          name="code" 
+          class="form-control" 
+          placeholder="Ví dụ: BK-001" 
+          value="{{ book.code if book else '' }}" 
+          required 
+          {{ 'readonly style="background-color: #f1f5f9; cursor: not-allowed;"' if is_edit else '' }}
+        >
+        <small style="color: var(--text-muted); font-size: 0.75rem;">Mã quản lý nội bộ (không trùng lặp)</small>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="isbn">Mã ISBN <span style="color: red;">*</span></label>
+        <input 
+          type="text" 
+          id="isbn" 
+          name="isbn" 
+          class="form-control" 
+          placeholder="Ví dụ: 978-604-58-9123-1" 
+          value="{{ book.isbn if book else '' }}" 
+          required 
+          {{ 'readonly style="background-color: #f1f5f9; cursor: not-allowed;"' if is_edit else '' }}
+        >
+        <small style="color: var(--text-muted); font-size: 0.75rem;">Mã chuẩn quốc tế (không trùng lặp)</small>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="title">Tên Sách <span style="color: red;">*</span></label>
+      <input type="text" id="title" name="title" class="form-control" placeholder="Nhập tên cuốn sách..." value="{{ book.title if book else '' }}" required>
+    </div>
+
+    <div class="form-grid-2">
+      <div class="form-group">
+        <label class="form-label" for="author">Tác Giả <span style="color: red;">*</span></label>
+        <input type="text" id="author" name="author" class="form-control" placeholder="Ví dụ: Robert C. Martin" value="{{ book.author if book else '' }}" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="category">Thể Loại <span style="color: red;">*</span></label>
+        <input type="text" id="category" name="category" class="form-control" placeholder="Ví dụ: Công nghệ thông tin, Kinh tế..." value="{{ book.category if book else '' }}" required>
+      </div>
+    </div>
+
+    <div class="form-grid-2">
+      <div class="form-group">
+        <label class="form-label" for="publisher">Nhà Xuất Bản</label>
+        <input type="text" id="publisher" name="publisher" class="form-control" placeholder="Ví dụ: NXB Giáo Dục" value="{{ book.publisher if book and book.publisher else '' }}">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="publish_year">Năm Xuất Bản</label>
+        <input type="number" id="publish_year" name="publish_year" class="form-control" placeholder="Ví dụ: 2024" min="1900" max="2099" value="{{ book.publish_year if book and book.publish_year else '' }}">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="total_quantity">Tổng Số Lượng Trong Kho <span style="color: red;">*</span></label>
+      <input type="number" id="total_quantity" name="total_quantity" class="form-control" min="1" value="{{ book.total_quantity if book else '1' }}" required>
+      {% if is_edit %}
+      <small style="color: var(--text-muted); font-size: 0.75rem;">Hiện có {{ book.available_quantity }} cuốn còn lại, {{ book.total_quantity - book.available_quantity }} cuốn đang được mượn.</small>
+      {% endif %}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="description">Tóm Tắt / Ghi Chú</label>
+      <textarea id="description" name="description" class="form-control" rows="3" placeholder="Mô tả ngắn gọn về nội dung cuốn sách...">{{ book.description if book and book.description else '' }}</textarea>
+    </div>
+
+    <div class="form-actions">
+      <a href="/books" class="btn btn-secondary">Hủy bỏ</a>
+      <button type="submit" class="btn btn-primary">{{ 'Lưu Thay Đổi' if is_edit else 'Lưu Cuốn Sách' }}</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
