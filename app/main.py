@@ -5,18 +5,39 @@ from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from contextlib import asynccontextmanager
 
+import time
+from sqlalchemy import text
 from app.core.config import settings
 from app.core.database import engine, Base, SessionLocal
 from app.services.seed_service import seed_initial_data
 from app.routers import books, members, loans, dashboard
 
+def wait_for_db(max_retries: int = 15, delay: float = 2.0):
+    """Kiểm tra và chờ database sẵn sàng trước khi truy cập (Healthcheck wait)"""
+    print("Đang kiểm tra kết nối tới cơ sở dữ liệu PostgreSQL...")
+    retries = 0
+    while retries < max_retries:
+        try:
+            with engine.connect() as connection:
+                connection.execute(text("SELECT 1"))
+            print("Kết nối cơ sở dữ liệu PostgreSQL thành công và sẵn sàng!")
+            return
+        except Exception as e:
+            retries += 1
+            print(f"Chờ CSDL sẵn sàng... (Lần thử {retries}/{max_retries}): {e}")
+            time.sleep(delay)
+    raise RuntimeError("Không thể kết nối tới cơ sở dữ liệu sau nhiều lần thử!")
+
 # Quản lý vòng đời khởi động ứng dụng (Lifespan event)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Tự động tạo bảng database nếu chưa tồn tại
+    # 1. Đảm bảo database đã sẵn sàng trước khi tiếp tục
+    wait_for_db()
+
+    # 2. Tự động tạo bảng database nếu chưa tồn tại
     Base.metadata.create_all(bind=engine)
     
-    # Nạp dữ liệu mẫu ban đầu nếu CSDL hoàn toàn trống
+    # 3. Nạp dữ liệu mẫu ban đầu nếu CSDL hoàn toàn trống
     db = SessionLocal()
     try:
         seed_initial_data(db)

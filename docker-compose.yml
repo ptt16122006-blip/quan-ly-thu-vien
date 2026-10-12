@@ -8,10 +8,15 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres_password_123}
       POSTGRES_DB: ${POSTGRES_DB:-library_db}
-    ports:
-      - "5432:5432"
+      APP_DB_USER: ${APP_DB_USER:-library_user}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:-library_app_secure_pass_2026}
+    # Cổng 5432 KHÔNG công khai ra ngoài host (tránh bị quét cổng từ bên ngoài và tránh xung đột).
+    # Các container nội bộ (app, pgadmin) kết nối trực tiếp qua tên service "postgres:5432".
+    expose:
+      - "5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d:ro
     networks:
       - library_network
     healthcheck:
@@ -20,14 +25,14 @@ services:
       timeout: 5s
       retries: 5
 
-  # Quản trị cơ sở dữ liệu qua giao diện Web pgAdmin
+  # Quản trị cơ sở dữ liệu qua giao diện Web pgAdmin (Service độc lập)
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: library_pgadmin
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@library.com
-      PGADMIN_DEFAULT_PASSWORD: admin_password_123
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@library.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin_password_123}
     ports:
       - "5050:80"
     depends_on:
@@ -44,7 +49,7 @@ services:
     container_name: library_app
     restart: always
     environment:
-      DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg2://postgres:postgres_password_123@postgres:5432/library_db}
+      DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg2://library_user:library_app_secure_pass_2026@postgres:5432/library_db}
       APP_NAME: ${APP_NAME:-Hệ Thống Quản Lý Thư Viện}
       DEBUG: ${DEBUG:-True}
       SECRET_KEY: ${SECRET_KEY:-supersecretkey_library_management_2026}
@@ -57,9 +62,11 @@ services:
       - library_network
 
 volumes:
+  # Volume lưu trữ dữ liệu PostgreSQL bền vững
   postgres_data:
     driver: local
 
 networks:
+  # Mạng bridge riêng kết nối bảo mật giữa các service
   library_network:
     driver: bridge
