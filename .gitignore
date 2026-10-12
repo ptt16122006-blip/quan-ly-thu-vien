@@ -43,6 +43,13 @@ postgres_data/
 logs/
 *.log
 
+# SSL Certificates & Private Keys
+nginx/ssl/
+*.crt
+*.key
+*.pem
+*.csr
+
 # IDE & OS
 .vscode/
 .idea/
