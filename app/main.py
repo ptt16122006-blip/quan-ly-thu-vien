@@ -74,3 +74,7 @@ app.include_router(dashboard.router)
 app.include_router(books.router)
 app.include_router(members.router)
 app.include_router(loans.router)
+
+# Giám sát hệ thống với Prometheus Metrics
+from prometheus_fastapi_instrumentator import Instrumentator
+Instrumentator().instrument(app).expose(app, endpoint="/metrics", tags=["Monitoring"])

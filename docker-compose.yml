@@ -77,9 +77,65 @@ services:
     networks:
       - library_network
 
+  # Prometheus Server thu thập và lưu trữ metrics
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: library_prometheus
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.enable-lifecycle"
+    networks:
+      - library_network
+
+  # Grafana Trực quan hóa dữ liệu và Dashboard giám sát
+  grafana:
+    image: grafana/grafana:11.2.0
+    container_name: library_grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/etc/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+    networks:
+      - library_network
+
+  # PostgreSQL Exporter thu thập metrics CSDL nội bộ (không expose port ra ngoài host)
+  postgres_exporter:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    container_name: library_postgres_exporter
+    restart: always
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres_password_123}@postgres:5432/${POSTGRES_DB:-library_db}?sslmode=disable"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - library_network
+
 volumes:
   # Volume lưu trữ dữ liệu PostgreSQL bền vững
   postgres_data:
+    driver: local
+  # Volume lưu trữ dữ liệu chuỗi thời gian của Prometheus bền vững
+  prometheus_data:
+    driver: local
+  # Volume lưu trữ dữ liệu cấu hình và trạng thái của Grafana bền vững
+  grafana_data:
     driver: local
 
 networks:

@@ -10,3 +10,5 @@ python-multipart>=0.0.20
 pytest>=8.3.4
 httpx>=0.28.1
 pytest-asyncio>=0.25.0
+prometheus-client>=0.21.0
+prometheus-fastapi-instrumentator>=7.0.0
