@@ -17,8 +17,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Sao chép toàn bộ mã nguồn
-COPY . /app/app/
+# Tạo user và group non-root để chạy ứng dụng an toàn (Hardening Non-root)
+RUN groupadd -g 10001 appuser && \
+    useradd -u 10001 -g appuser -s /bin/sh -m appuser
+
+# Sao chép toàn bộ mã nguồn với quyền sở hữu của appuser
+COPY --chown=appuser:appuser . /app/app/
+
+# Chuyển sang user non-root
+USER appuser
 
 # Khởi chạy uvicorn server
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
