@@ -8,19 +8,22 @@ Công nghệ: **Python FastAPI, PostgreSQL, pgAdmin, Nginx Reverse Proxy, Docker
 
 ## 1. Kiến Trúc & Cấu Trúc Dịch Vụ Docker
 
-Toàn bộ hệ thống chạy tự động trong mạng Docker riêng biệt (`library_network`):
+Hệ thống được thiết kế theo kiến trúc phân tầng an ninh với 3 mạng Docker bridge riêng biệt:
+- **`frontend_network`**: Mạng ingress tiếp nhận request người dùng (kết nối `nginx` và `app`).
+- **`backend_network`**: Mạng cô lập bảo vệ CSDL (kết nối `app`, `postgres`, `pgadmin`, `postgres_exporter`). Cổng 5432 hoàn toàn không expose ra ngoài.
+- **`monitoring_network`**: Mạng giám sát nội bộ (kết nối `prometheus`, `grafana`, `loki`, `promtail`, `postgres_exporter`, `app`).
 
-| Service | Container Name | Cổng Host | Cổng Nội Bộ | Mục Đích |
-| :--- | :--- | :--- | :--- | :--- |
-| **`nginx`** | `library_nginx` | `80`, `443` | `80`, `443` | **Reverse Proxy & SSL Termination**: Tiếp nhận request chính, điều hướng HTTP sang HTTPS, gắn security headers, định tuyến đến FastAPI app |
-| **`app`** | `library_app` | *Không expose* | `8000` | Ứng dụng web FastAPI (Jinja2, HTML, CSS, `/metrics`) - Chỉ nhận request từ Nginx |
-| **`postgres`** | `library_postgres` | *Không expose* | `5432` | Cơ sở dữ liệu PostgreSQL 16 Alpine - Bảo mật, chỉ kết nối nội bộ |
-| **`pgadmin`** | `library_pgadmin` | `5050` | `80` | Giao diện web quản trị cơ sở dữ liệu pgAdmin 4 |
-| **`prometheus`** | `library_prometheus` | `9090` | `9090` | Thu thập và lưu trữ metrics chuỗi thời gian (FastAPI, Postgres, Prometheus) |
-| **`grafana`** | `library_grafana` | `3000` | `3000` | Trực quan hóa dữ liệu giám sát và tra cứu log tập trung |
-| **`postgres_exporter`** | `library_postgres_exporter` | *Không expose* | `9187` | Thu thập chỉ số hiệu năng CSDL PostgreSQL nội bộ |
-| **`loki`** | `library_loki` | `3100` | `3100` | Hệ thống lưu trữ và lập chỉ mục nhật ký (log) tập trung |
-| **`promtail`** | `library_promtail` | *Không expose* | `9080` | Thu thập log thực tế từ Docker containers và chuyển tiếp đến Loki |
+| Service | Container Name | Mạng Docker | Cổng Host | Cổng Nội Bộ | Mục Đích |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **`nginx`** | `library_nginx` | `frontend_network` | `80`, `443` | `80`, `443` | **Reverse Proxy & SSL Termination**: Tiếp nhận request chính, điều hướng HTTP sang HTTPS, gắn security headers, định tuyến đến FastAPI app |
+| **`app`** | `library_app` | `frontend`, `backend`, `monitoring` | *Không expose* | `8000` | Ứng dụng web FastAPI (Jinja2, HTML, CSS, `/metrics`) - Chạy non-root user `appuser` (UID 10001) |
+| **`postgres`** | `library_postgres` | `backend_network` | *Không expose* | `5432` | Cơ sở dữ liệu PostgreSQL 16 Alpine - Bảo mật, chỉ kết nối nội bộ |
+| **`pgadmin`** | `library_pgadmin` | `backend_network` | `5050` | `80` | Giao diện web quản trị cơ sở dữ liệu pgAdmin 4 |
+| **`prometheus`** | `library_prometheus` | `monitoring_network` | `9090` | `9090` | Thu thập và lưu trữ metrics chuỗi thời gian (FastAPI, Postgres, Prometheus) |
+| **`grafana`** | `library_grafana` | `monitoring_network` | `3000` | `3000` | Trực quan hóa dữ liệu giám sát và tra cứu log tập trung |
+| **`postgres_exporter`** | `library_postgres_exporter` | `backend`, `monitoring` | *Không expose* | `9187` | Thu thập chỉ số hiệu năng CSDL PostgreSQL nội bộ |
+| **`loki`** | `library_loki` | `monitoring_network` | *Không expose* | `3100` | Hệ thống lưu trữ và lập chỉ mục nhật ký (log) tập trung |
+| **`promtail`** | `library_promtail` | `monitoring_network` | *Không expose* | `9080` | Thu thập log thực tế từ Docker containers qua socket và chuyển tiếp đến Loki |
 
 ---
 
