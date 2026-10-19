@@ -127,6 +127,36 @@ services:
     networks:
       - library_network
 
+  # Loki Server lưu trữ và lập chỉ mục log tập trung
+  loki:
+    image: grafana/loki:3.0.0
+    container_name: library_loki
+    restart: always
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./loki/loki-config.yml:/etc/loki/local-config.yaml:ro
+      - loki_data:/loki
+    networks:
+      - library_network
+
+  # Promtail thu thập log thực tế từ Docker containers và đẩy về Loki
+  # Lưu ý: Promtail EOL từ 02/03/2026, được sử dụng theo đúng yêu cầu đề tài thực hành môn học
+  promtail:
+    image: grafana/promtail:3.0.0
+    container_name: library_promtail
+    restart: always
+    command: -config.file=/etc/promtail/config.yml
+    volumes:
+      - ./promtail/promtail-config.yml:/etc/promtail/config.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    depends_on:
+      - loki
+    networks:
+      - library_network
+
 volumes:
   # Volume lưu trữ dữ liệu PostgreSQL bền vững
   postgres_data:
@@ -136,6 +166,9 @@ volumes:
     driver: local
   # Volume lưu trữ dữ liệu cấu hình và trạng thái của Grafana bền vững
   grafana_data:
+    driver: local
+  # Volume lưu trữ dữ liệu log tập trung của Loki bền vững
+  loki_data:
     driver: local
 
 networks:

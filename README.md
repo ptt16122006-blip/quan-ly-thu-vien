@@ -13,9 +13,14 @@ Toàn bộ hệ thống chạy tự động trong mạng Docker riêng biệt (`
 | Service | Container Name | Cổng Host | Cổng Nội Bộ | Mục Đích |
 | :--- | :--- | :--- | :--- | :--- |
 | **`nginx`** | `library_nginx` | `80`, `443` | `80`, `443` | **Reverse Proxy & SSL Termination**: Tiếp nhận request chính, điều hướng HTTP sang HTTPS, gắn security headers, định tuyến đến FastAPI app |
-| **`app`** | `library_app` | *Không expose* | `8000` | Ứng dụng web FastAPI (Jinja2, HTML, CSS) - Chỉ nhận request từ Nginx |
+| **`app`** | `library_app` | *Không expose* | `8000` | Ứng dụng web FastAPI (Jinja2, HTML, CSS, `/metrics`) - Chỉ nhận request từ Nginx |
 | **`postgres`** | `library_postgres` | *Không expose* | `5432` | Cơ sở dữ liệu PostgreSQL 16 Alpine - Bảo mật, chỉ kết nối nội bộ |
 | **`pgadmin`** | `library_pgadmin` | `5050` | `80` | Giao diện web quản trị cơ sở dữ liệu pgAdmin 4 |
+| **`prometheus`** | `library_prometheus` | `9090` | `9090` | Thu thập và lưu trữ metrics chuỗi thời gian (FastAPI, Postgres, Prometheus) |
+| **`grafana`** | `library_grafana` | `3000` | `3000` | Trực quan hóa dữ liệu giám sát và tra cứu log tập trung |
+| **`postgres_exporter`** | `library_postgres_exporter` | *Không expose* | `9187` | Thu thập chỉ số hiệu năng CSDL PostgreSQL nội bộ |
+| **`loki`** | `library_loki` | `3100` | `3100` | Hệ thống lưu trữ và lập chỉ mục nhật ký (log) tập trung |
+| **`promtail`** | `library_promtail` | *Không expose* | `9080` | Thu thập log thực tế từ Docker containers và chuyển tiếp đến Loki |
 
 ---
 
@@ -108,3 +113,35 @@ docker compose down
 - `Referrer-Policy: strict-origin-when-cross-origin` (Bảo mật referrer).
 - `Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; frame-ancestors 'self';` (Bảo vệ XSS mà không làm gián đoạn CSS/JS giao diện).
 - `X-XSS-Protection: 1; mode=block` (Lọc XSS cho trình duyệt cũ).
+
+---
+
+## 6. Giám Sát (Prometheus & Grafana) & Quản Lý Log Tập Trung (Loki & Promtail)
+
+### A. Truy cập giao diện giám sát & log
+1. **Grafana Dashboard & Log Explorer**:
+   - Địa chỉ: **[http://localhost:3000](http://localhost:3000)**
+   - Tài khoản: `admin` / Mật khẩu: `admin`
+   - **Dashboard Giám sát**: Vào Menu &rarr; **Dashboards** &rarr; thư mục **Library Management** &rarr; **Hệ Thống Quản Lý Thư Viện - Giám Sát Tổng Quan** (Hiển thị trạng thái services, latency, request rate, database size, connection pool).
+   - **Tra cứu Log (Grafana Explore)**: Vào Menu &rarr; **Explore** &rarr; chọn Datasource **Loki**.
+2. **Prometheus Web UI**:
+   - Địa chỉ: **[http://localhost:9090](http://localhost:9090)**
+   - Kiểm tra các targets thu thập metrics: Menu **Status** &rarr; **Targets** (Gồm: `fastapi_app`, `postgres`, `prometheus` đều ở trạng thái `UP`).
+
+### B. 3 Câu truy vấn LogQL mẫu tra cứu Log thực tế trong Grafana Explore
+1. **Truy vấn toàn bộ log của ứng dụng FastAPI**:
+   ```logql
+   {service="app"}
+   ```
+2. **Truy vấn log truy cập Nginx Reverse Proxy**:
+   ```logql
+   {service="nginx"}
+   ```
+3. **Lọc log nghiệp vụ có chứa phương thức HTTP GET**:
+   ```logql
+   {service="app"} |= "GET"
+   ```
+
+### C. Lưu ý kỹ thuật về Promtail (EOL)
+> **Lưu ý đánh giá môn học:**  
+> Promtail đã bước vào giai đoạn End-Of-Life (EOL) từ ngày 02/03/2026 và Grafana Labs khuyến nghị chuyển sang Grafana Alloy. Trong dự án này, Promtail được triển khai theo đúng chuẩn yêu cầu đề bài và rubric môn học (`grafana/promtail:3.0.0`), kết nối qua socket Docker để đọc log container thực tế và chuyển tiếp về Loki qua mạng nội bộ.

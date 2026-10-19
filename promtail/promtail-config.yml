@@ -1,0 +1,47 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+  log_level: info
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  # Gửi log trực tiếp đến service Loki qua địa chỉ nội bộ của Docker network
+  - url: http://loki:3100/loki/api/v1/push
+    batchwait: 1s
+    batchsize: 102400
+
+scrape_configs:
+  # Thu thập log thực tế của toàn bộ container Docker dự án qua docker_sd_configs
+  - job_name: docker
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+    relabel_configs:
+      # Chỉ thu thập log của các containers thuộc dự án Thư viện hiện tại (quan-ly-thu-vien)
+      - source_labels: ['__meta_docker_container_label_com_docker_compose_project']
+        regex: 'quan-ly-thu-vien'
+        action: keep
+      # Lấy tên container sạch (bỏ dấu gạch chéo đầu tiên: /library_app -> library_app)
+      - source_labels: ['__meta_docker_container_name']
+        regex: '/(.*)'
+        target_label: 'container'
+      # Trích xuất compose service name (app, nginx, postgres, pgadmin, ...)
+      - source_labels: ['__meta_docker_container_label_com_docker_compose_service']
+        target_label: 'service'
+      # Gán đường dẫn file log thực tế trong /var/lib/docker/containers
+      - source_labels: ['__meta_docker_container_id']
+        target_label: '__path__'
+        replacement: '/var/lib/docker/containers/$1*/*-json.log'
+    pipeline_stages:
+      # Phân tích cú pháp Docker json-file format
+      - json:
+          expressions:
+            log: log
+            stream: stream
+            time: time
+      - labels:
+          stream:
+      - output:
+          source: log
