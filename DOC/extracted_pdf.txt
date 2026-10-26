@@ -1,0 +1,596 @@
+=== PAGE 1 ===
+TRƯỜNG ĐẠI HỌC CÔNG NGHỆ THÔNG TIN V À
+TRUYỀN THÔNG
+KHOA CÔNG NGHỆ THÔNG TIN
+BÁO CÁO HỌC PHẦN
+HỌC PHẦN: PHÁT TRIỂN ỨNG DỤNG AI
+ĐỀ TÀI
+XÂY DỰNG ỨNG DỤNG AI NHẬN DIỆN
+HÌNH ẢNH
+Nghiên cứu và triển khai mô hình học sâu hỗ trợ phân loại ảnh
+Giảng viên hướng dẫn: TS. Trần Quang Quý
+Sinh viên thực hiện: Nguyễn Văn A
+Mã sinh viên: DTC2154802010001
+Lớp: K20-CNTT01
+Thái Nguyên, 2026
+
+=== PAGE 2 ===
+LỜI CAM ĐOAN
+Tôi xin cam đoan rằng bản báo cáo học phần với đề tài: “XÂY DỰNG ỨNG
+DỤNG AI NHẬN DIỆN HÌNH ẢNH” là công trình nghiên cứu và thực hiện độc
+lập của cá nhân tôi (hoặc nhóm tác giả) dưới sự hướng dẫn khoa học của thầy/cô TS.
+Trần Quang Quý .
+Tôi cam kết các nội dung sau:
+a) Toàn bộ số liệu, kết quả thực nghiệm và mã nguồn được trình bày trong báo cáo là
+trung thực, khách quan và không sao chép trái phép từ bất kỳ công trình nào khác.
+b) Các tài liệu, công bố khoa học, mã nguồn mở hoặc thư viện của bên thứ ba được
+tham khảo trong quá trình thực hiện đều được trích dẫn đầy đủ và đúng quy chuẩn
+học thuật (IEEE).
+c) Tôi hoàn toàn chịu trách nhiệm trước Khoa Công nghệ Thông tin, Trường Đại học
+Công nghệ Thông tin và Truyền thông về tính trung thực và liêm chính học thuật
+của báo cáo này.
+Thái Nguyên, ngày …… tháng …… năm 2026
+Sinh viên thực hiện
+(Ký và ghi rõ họ tên)
+Nguyễn Văn A
+i
+
+=== PAGE 3 ===
+LỜI CẢM ƠN
+Để hoàn thành bản báo cáo học phần PHÁT TRIỂN ỨNG DỤNG AI , tôi xin
+bày tỏ lòng biết ơn sâu sắc đến Ban Giám hiệu TRƯỜNG ĐẠI HỌC CÔNG NGHỆ
+THÔNG TIN V À TRUYỀN THÔNG cùng toàn thể các thầy cô giáo thuộc KHOA
+CÔNG NGHỆ THÔNG TIN , những người đã truyền đạt kiến thức chuyên môn vững
+chắc và tạo điều kiện học tập tốt nhất cho tôi trong suốt quá trình theo học tại trường.
+Đặc biệt, tôi xin gửi lời cảm ơn chân thành và sâu sắc nhất đến thầy/cô TS. Trần
+Quang Quý , người đã trực tiếp hướng dẫn, định hướng nghiên cứu và tận tình chỉ bảo,
+động viên tôi trong suốt thời gian thực hiện đề tài.
+Tôi cũng xin gửi lời cảm ơn tới các bạn sinh viên trong lớp K20-CNTT01 đã luôn
+đồng hành, trao đổi và hỗ trợ tôi trong quá trình học tập và thảo luận chuyên môn.
+Mặc dù đã nỗ lực hết mình để hoàn thiện báo cáo một cách chỉn chu nhất, song do
+hạn chế về mặt thời gian và kinh nghiệm thực tế, báo cáo khó tránh khỏi những thiếu
+sót nhất định. Tôi rất mong nhận được những ý kiến đóng góp, nhận xét quý báu từ quý
+thầy cô và các bạn để đề tài được hoàn thiện hơn nữa.
+Tôi xin chân thành cảm ơn!
+Thái Nguyên, năm 2026
+Sinh viên thực hiện
+(Ký và ghi rõ họ tên)
+Nguyễn Văn A
+ii
+
+=== PAGE 4 ===
+TÓM TẮT BÁO CÁO
+Báo cáo học phần PHÁT TRIỂN ỨNG DỤNG AI với đề tài “XÂY DỰNG
+ỨNG DỤNG AI NHẬN DIỆN HÌNH ẢNH” trình bày quá trình nghiên cứu, thiết
+kế và phát triển một ứng dụng trí tuệ nhân tạo (AI) hoàn chỉnh từ khâu chuẩn bị dữ liệu,
+xây dựng mô hình học máy/học sâu cho tới triển khai ứng dụng thực tế.
+Trong bối cảnh công nghệ AI đang phát triển mạnh mẽ và thâm nhập vào nhiều
+lĩnh vực của đời sống, việc làm chủ quy trình phát triển và tích hợp các mô hình thông
+minh vào ứng dụng thực tiễn là kỹ năng cốt lõi của sinh viên ngành Công nghệ Thông
+tin. Mục tiêu chính của đề tài là xây dựng một pipeline chuẩn hóa bao gồm: tiền xử lý dữ
+liệu, huấn luyện và tối ưu mô hình, đánh giá định lượng các chỉ số hiệu năng (Accuracy,
+Precision, Recall, F1-score), và đóng gói thành ứng dụng có giao diện tương tác trực quan.
+Kết quả thực nghiệm cho thấy mô hình đạt được hiệu năng ổn định, đáp ứng được
+các yêu cầu đặt ra ban đầu và có khả năng ứng dụng trong các bài toán thực tế. Bên
+cạnh những kết quả đạt được, báo cáo cũng thẳng thắn chỉ ra các hạn chế hiện tại về độ
+phức tạp tính toán và đề xuất các giải pháp nâng cấp, mở rộng hệ thống trong tương lai.
+Từ khóa: Trí tuệ nhân tạo, Học máy, Học sâu, Pipeline AI, Phát triển ứng dụng, Khoa
+Công nghệ Thông tin ICTU.
+iii
+
+=== PAGE 5 ===
+DANH MỤC TỪ VIẾT TẮT
+Từ viết tắt Tiếng Anh Nghĩa tiếng Việt
+AI Artificial Intelligence Trí tuệ nhân tạo
+ANN Artificial Neural Network Mạng nơ-ron nhân tạo
+API Application Programming Interface Giao diện lập trình ứng
+dụng
+CNN Convolutional Neural Network Mạng nơ-ron tích chập
+CPU Central Processing Unit Đơn vị xử lý trung tâm
+DL Deep Learning Học sâu
+GPU Graphics Processing Unit Đơn vị xử lý đồ họa
+ICTU University of Information and Communi-
+cation Technology
+Trường ĐH CNTT và
+Truyền thông
+LLM Large Language Model Mô hình ngôn ngữ lớn
+ML Machine Learning Học máy
+NLP Natural Language Processing Xử lý ngôn ngữ tự nhiên
+RAG Retrieval-Augmented Generation Sinh văn bản tăng cường
+truy xuất
+SGD Stochastic Gradient Descent Giảm độ dốc ngẫu nhiên
+UI User Interface Giao diện người dùng
+iv
+
+=== PAGE 6 ===
+DANH MỤC THUẬT NGỮ
+Thuật ngữ Tiếng Anh Viết tắt Giải thích
+Trí tuệ nhân tạo Artificial
+Intelligence
+AI Lĩnh vực khoa học máy tính mô
+phỏng hành vi thông minh của con
+người.
+Học máy Machine
+Learning
+ML Tập con của AI tập trung vào việc
+học quy luật từ dữ liệu mà không
+cần lập trình tường minh.
+Học sâu Deep Learning DL Nhánh học máy dựa trên mạng
+nơ-ron nhiều tầng ẩn để biểu diễn
+các đặc trưng phức tạp.
+Mạng tích chập Convolutional
+Neural Network
+CNN Kiến trúc mạng chuyên biệt cho
+việc trích xuất đặc trưng không
+gian từ dữ liệu hình ảnh.
+Tăng cường dữ
+liệu
+Data
+Augmentation
+DA Kỹ thuật tạo thêm dữ liệu huấn
+luyện bằng các phép biến đổi
+(quay, lật, cắt ảnh).
+Hàm mất mát Loss Function Loss Hàm định lượng sai số giữa giá trị
+dự đoán của mô hình và nhãn thực
+tế.
+v
+
+=== PAGE 7 ===
+MỤC LỤC
+LỜI CAM ĐOAN i
+LỜI CẢM ƠN ii
+TÓM TẮT BÁO CÁO iii
+DANH MỤC TỪ VIẾT TẮT iv
+DANH MỤC THUẬT NGỮ v
+DANH MỤC HÌNH ẢNH ix
+DANH MỤC BẢNG x
+1 TỔNG QUAN VỀ ĐỀ TÀI 1
+1.1 Bối cảnh và tính cấp thiết của đề tài . . . . . . . . . . . . . . . . . . . . . 1
+1.2 Lý do chọn đề tài . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1
+1.3 Mục tiêu nghiên cứu . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1
+1.4 Đối tượng và phạm vi nghiên cứu . . . . . . . . . . . . . . . . . . . . . . . 2
+1.5 Phương pháp tiếp cận . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 2
+1.6 Cấu trúc của báo cáo . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 2
+2 CƠ SỞ LÝ THUYẾT V À CÔNG NGHỆ 3
+2.1 Tổng quan về bài toán và kiến trúc mạng học sâu . . . . . . . . . . . . . . 3
+2.2 Hàm mất mát và phương pháp tối ưu . . . . . . . . . . . . . . . . . . . . . 3
+2.3 Các công nghệ và thư viện phát triển . . . . . . . . . . . . . . . . . . . . . 4
+vi
+
+=== PAGE 8 ===
+MỤC LỤC
+3 PHÂN TÍCH V À THIẾT KẾ ỨNG DỤNG AI 5
+3.1 Phân tích yêu cầu bài toán . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+3.2 Kiến trúc tổng thể hệ thống . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+3.3 Thiết kế mô hình AI và pipeline xử lý . . . . . . . . . . . . . . . . . . . . 6
+3.4 Thiết kế giao diện người dùng . . . . . . . . . . . . . . . . . . . . . . . . . 6
+4 TRIỂN KHAI V À THỰC NGHIỆM 7
+4.1 Môi trường thực nghiệm và dữ liệu . . . . . . . . . . . . . . . . . . . . . . 7
+4.2 Xây dựng và huấn luyện mô hình . . . . . . . . . . . . . . . . . . . . . . . 7
+4.3 Kết quả thực nghiệm và phân tích . . . . . . . . . . . . . . . . . . . . . . 8
+4.4 Đóng gói và triển khai ứng dụng . . . . . . . . . . . . . . . . . . . . . . . 9
+5 ĐÁNH GIÁ V À KẾT LUẬN 10
+5.1 Các kết quả đạt được . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+5.2 Đánh giá ưu điểm và hạn chế . . . . . . . . . . . . . . . . . . . . . . . . . 10
+5.2.1 Ưu điểm . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+5.2.2 Hạn chế còn tồn tại . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+5.3 Hướng phát triển trong tương lai . . . . . . . . . . . . . . . . . . . . . . . 11
+5.4 Lời kết . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+TÀI LIỆU THAM KHẢO 12
+A MÃ NGUỒN CHƯƠNG TRÌNH 13
+A.1 Liên kết kho mã nguồn (Repository) . . . . . . . . . . . . . . . . . . . . . 13
+A.2 Cấu trúc thư mục dự án phần mềm . . . . . . . . . . . . . . . . . . . . . . 13
+B HƯỚNG DẪN CÀI ĐẶT V À V ẬN HÀNH 14
+B.1 Yêu cầu hệ thống . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+B.2 Các bước cài đặt môi trường . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+B.2.1 Bước 1: Khởi tạo môi trường ảo (Virtual Environment) . . . . . . . 14
+vii
+
+=== PAGE 9 ===
+MỤC LỤC
+B.2.2 Bước 2: Cài đặt các thư viện cần thiết . . . . . . . . . . . . . . . . 14
+B.3 Khởi chạy ứng dụng giao diện . . . . . . . . . . . . . . . . . . . . . . . . . 15
+C KẾT QUẢ THỰC NGHIỆM V À SIÊU THAM SỐ 16
+C.1 Bảng tổng hợp siêu tham số huấn luyện (Hyperparameters) . . . . . . . . 16
+C.2 Ghi chú bổ sung về kiểm thử . . . . . . . . . . . . . . . . . . . . . . . . . 16
+viii
+
+=== PAGE 10 ===
+DANH MỤC HÌNH ẢNH
+3.1 Sơ đồ kiến trúc luồng xử lý và nhận diện của ứng dụng AI . . . . . . . . . 6
+ix
+
+=== PAGE 11 ===
+DANH MỤC BẢNG
+4.1 Kết quả thực nghiệm của các cấu hình mô hình trên tập kiểm thử . . . . . 9
+C.1 Bảng thiết lập các siêu tham số huấn luyện mô hình . . . . . . . . . . . . 16
+x
+
+=== PAGE 12 ===
+CHƯƠNG 1
+TỔNG QUAN VỀ ĐỀ TÀI
+1.1. Bối cảnh và tính cấp thiết của đề tài
+Trong những năm gần đây, Trí tuệ nhân tạo (AI) và Học sâu (Deep Learning) đã
+đạt được những bước tiến vượt bậc, thúc đẩy sự chuyển đổi số mạnh mẽ trong nhiều lĩnh
+vực như y tế, giao thông, tài chính và công nghiệp sản xuất [ 1]. Đặc biệt, các kiến trúc
+mạng nơ-ron tích chập (CNN) và Transformer đã mở ra khả năng tự động hóa việc phân
+loại và nhận diện hình ảnh với độ chính xác cao [ 2, 3].
+Báo cáo học phần này tập trung nghiên cứu, thiết kế và hiện thực hóa đề tài “XÂY
+DỰNG ỨNG DỤNG AI NHẬN DIỆN HÌNH ẢNH” , hướng tới việc xây dựng
+một giải pháp phần mềm thông minh có khả năng phân loại dữ liệu hình ảnh với độ tin
+cậy cao, phục vụ cho quá trình học tập và ứng dụng thực tiễn tại TRƯỜNG ĐẠI HỌC
+CÔNG NGHỆ THÔNG TIN V À TRUYỀN THÔNG.
+1.2. Lý do chọn đề tài
+Lý do lựa chọn đề tài xuất phát từ nhu cầu thực tiễn trong việc xử lý khối lượng
+lớn dữ liệu đa phương tiện, đồng thời tạo cơ hội để sinh viên tiếp cận bài bản với quy
+trình phát triển một sản phẩm AI từ đầu (end-to-end pipeline).
+1.3. Mục tiêu nghiên cứu
+Mục tiêu tổng quát của đề tài là xây dựng thành công ứng dụng AI đáp ứng các
+yêu cầu kỹ thuật:
+• Mục tiêu 1: Thu thập, chuẩn hóa và xây dựng tập dữ liệu hình ảnh đạt chuẩn.
+• Mục tiêu 2: Huấn luyện và tinh chỉnh mô hình học sâu đạt độ chính xác kỳ
+vọng.
+• Mục tiêu 3: Xây dựng ứng dụng hoàn chỉnh có giao diện người dùng thân thiện,
+cho phép người dùng tải ảnh và nhận kết quả dự đoán thời gian thực.
+1
+
+=== PAGE 13 ===
+CHƯƠNG 1. TỔNG QUAN VỀ ĐỀ TÀI
+1.4. Đối tượng và phạm vi nghiên cứu
+• Đối tượng nghiên cứu: Dữ liệu hình ảnh số, các kiến trúc mạng nơ-ron học
+sâu và các framework phát triển ứng dụng AI.
+• Phạm vi nghiên cứu: Thử nghiệm mô hình trên tập dữ liệu kiểm thử và triển
+khai ứng dụng trên môi trường máy tính cá nhân.
+1.5. Phương pháp tiếp cận
+Phương pháp tiếp cận dựa trên sự kết hợp giữa nghiên cứu lý thuyết nền tảng và
+triển khai thực nghiệm theo chu trình kỹ thuật chuẩn: chuẩn bị dữ liệu, huấn luyện mô
+hình, đánh giá định lượng và đóng gói phần mềm.
+1.6. Cấu trúc của báo cáo
+Nội dung của báo cáo học phần được tổ chức thành 5 chương chính như sau:
+• Chương 1 - Tổng quan về đề tài: Trình bày bối cảnh, mục tiêu, đối tượng,
+phạm vi và phương pháp tiếp cận của đề tài.
+• Chương 2 - Cơ sở lý thuyết và công nghệ: Khái quát các nền tảng toán
+học, kiến trúc học máy/học sâu và các công cụ phát triển liên quan.
+• Chương 3 - Phân tích và thiết kế hệ thống: Mô tả kiến trúc tổng thể, quy
+trình xử lý dữ liệu và thiết kế giao diện ứng dụng.
+• Chương 4 - Triển khai và thực nghiệm: Trình bày kết quả huấn luyện mô
+hình, kiểm thử phần mềm và phân tích hiệu năng.
+• Chương 5 - Kết luận và hướng phát triển: Tổng kết các kết quả đạt được,
+chỉ ra các hạn chế và đề xuất hướng nghiên cứu tiếp theo.
+2
+
+=== PAGE 14 ===
+CHƯƠNG 2
+CƠ SỞ LÝ THUYẾT V À CÔNG NGHỆ
+2.1. Tổng quan về bài toán và kiến trúc mạng học sâu
+Trong bài toán phân loại hình ảnh, mục tiêu là ánh xạ một ảnh đầu vào x ∈ RH×W ×C
+tới một véc-tơ xác suất ˆy ∈ [0, 1]K, trong đó K biểu thị tổng số lượng lớp đối tượng cần
+phân loại.
+Mô hình học sâu tổng quát có thể được biểu diễn dưới dạng một hàm tham số hóa:
+ˆy = f (x; Θ) (2.1)
+trong đó Θ là tập hợp các trọng số (weights) và độ lệch (biases) cần được tối ưu hóa trong
+quá trình huấn luyện thông qua thuật toán lan truyền ngược (backpropagation) [ 1].
+2.2. Hàm mất mát và phương pháp tối ưu
+Để đánh giá sai số giữa phân phối xác suất dự đoán ˆy và nhãn thực tế y, hàm mất
+mát phân loại đa lớp (Categorical Cross-Entropy Loss) thường được áp dụng rộng rãi:
+LCE(y, ˆy) = −
+K∑
+k=1
+yk log(ˆyk) (2.2)
+Hàm mất mát trong Phương trình (2.2) có giá trị nhỏ dần khi xác suất dự đoán của
+mô hình tiệm cận tới nhãn thực tế yk = 1 . Việc cập nhật trọng số ở mỗi bước lặp được
+thực hiện thông qua đạo hàm của L theo tham số Θ:
+Θ(t+1) = Θ(t) − η∇ΘL(Θ(t)) (2.3)
+với η > 0 là tốc độ học (learning rate).
+3
+
+=== PAGE 15 ===
+CHƯƠNG 2. CƠ SỞ LÝ THUYẾT V À CÔNG NGHỆ
+2.3. Các công nghệ và thư viện phát triển
+Đề tài sử dụng hệ sinh thái ngôn ngữ lập trình Python nhờ tính linh hoạt và sự hỗ
+trợ mạnh mẽ từ cộng đồng mã nguồn mở. Các thư viện chính bao gồm:
+• PyTorch: Framework học sâu hiện đại phục vụ việc xây dựng và huấn luyện mô
+hình [ 4].
+• Torchvision: Hỗ trợ các phép biến đổi ảnh và các kiến trúc mạng chuẩn hóa.
+• OpenCV / Pillow: Thư viện xử lý ảnh số và chuyển đổi định dạng.
+• Streamlit / PyQt: Framework hỗ trợ xây dựng giao diện ứng dụng trực quan
+và nhanh chóng.
+4
+
+=== PAGE 16 ===
+CHƯƠNG 3
+PHÂN TÍCH V À THIẾT KẾ ỨNG DỤNG AI
+3.1. Phân tích yêu cầu bài toán
+Hệ thống ứng dụng AI được thiết kế nhằm đáp ứng cả yêu cầu chức năng (Functional
+Requirements) và yêu cầu phi chức năng (Non-functional Requirements):
+1) Yêu cầu chức năng:
+• Cho phép người dùng tải lên hình ảnh từ thiết bị cục bộ hoặc chụp từ webcam.
+• Thực hiện tiền xử lý dữ liệu ảnh tự động (chuẩn hóa kích thước, chuẩn hóa
+giá trị pixel).
+• Đưa ra dự đoán nhãn phân loại cùng độ tin cậy tương ứng tính theo phần
+trăm.
+2) Yêu cầu phi chức năng:
+• Thời gian phản hồi dự đoán dưới 500 ms trên phần cứng tiêu chuẩn.
+• Giao diện đơn giản, trực quan, hỗ trợ hiển thị tốt trên các độ phân giải màn
+hình phổ biến.
+3.2. Kiến trúc tổng thể hệ thống
+Kiến trúc ứng dụng được chia thành các mô-đun chức năng độc lập nhằm đảm bảo
+tính mở rộng và dễ bảo trì. Quy trình xử lý dữ liệu xuyên suốt từ khi nhận đầu vào đến
+khi hiển thị kết quả được mô tả chi tiết trong Hình 3.1 .
+Theo sơ đồ trong Hình 3.1 , quy trình bao gồm 4 giai đoạn chính:
+1. Nhận dữ liệu đầu vào: Người dùng truyền vào hình ảnh đối tượng cần nhận
+dạng.
+2. Tiền xử lý ảnh: Chuyển đổi không gian màu, điều chỉnh kích thước về 224 × 224
+pixel và chuẩn hóa phân phối dữ liệu theo tập ImageNet [ 5].
+5
+
+=== PAGE 17 ===
+CHƯƠNG 3. PHÂN TÍCH V À THIẾT KẾ ỨNG DỤNG AI
+Hình 3.1: Sơ đồ kiến trúc luồng xử lý và nhận diện của ứng dụng AI
+3. Mô hình nơ-ron AI: Thực hiện trích xuất đặc trưng và tính toán phân phối xác
+suất dự đoán.
+4. Hiển thị kết quả: Trả về nhãn có xác suất cao nhất kèm theo biểu đồ phân phối
+xác suất trên giao diện.
+3.3. Thiết kế mô hình AI và pipeline xử lý
+Mô hình được thiết kế nhằm cân bằng giữa độ chính xác dự đoán và chi phí tính
+toán, cho phép triển khai thuận lợi ngay cả trên các thiết bị không có card đồ họa chuyên
+dụng (GPU rời).
+3.4. Thiết kế giao diện người dùng
+Giao diện ứng dụng được thiết kế tối giản với phong cách hiện đại, gồm hai cột
+chính: cột bên trái là bảng điều khiển và tải tệp tin, cột bên phải hiển thị ảnh xem trước
+và bảng kết quả nhận diện.
+6
+
+=== PAGE 18 ===
+CHƯƠNG 4
+TRIỂN KHAI V À THỰC NGHIỆM
+4.1. Môi trường thực nghiệm và dữ liệu
+Thực nghiệm được tiến hành trên môi trường phần cứng và phần mềm đồng nhất:
+• Phần cứng: CPU Intel Core i7, 16 GB RAM, GPU NVIDIA GeForce RTX 3060
+(6 GB VRAM).
+• Phần mềm: Hệ điều hành Windows 11 64-bit, Python phiên bản 3.10+, PyTorch
+2.1 [ 4].
+• Tập dữ liệu: Dữ liệu thực nghiệm được phân chia ngẫu nhiên thành ba tập độc
+lập theo tỷ lệ chuẩn: 70% huấn luyện (Train), 15% kiểm định (Validation) và
+15% kiểm thử (Test).
+4.2. Xây dựng và huấn luyện mô hình
+Quy trình huấn luyện mô hình được lập trình bằng ngôn ngữ Python sử dụng
+framework PyTorch. Đoạn mã 4.1 minh họa hàm thực thi một epoch huấn luyện tiêu
+chuẩn bao gồm các bước chuyển dữ liệu lên thiết bị tính toán, lan truyền xuôi, tính mất
+mát và cập nhật tham số.
+1 import torch
+2
+3 def train_one_epoch(model, dataloader, criterion, optimizer, device):
+4 ”””ựThc ệhin ộmt chu trình ấhun ệluyn (epoch ) trên ậtp ữd ệliu.”””
+5 model.train()
+6 running_loss = 0.0
+7 correct_samples = 0
+8 total_samples = 0
+9
+10 for inputs, labels in dataloader:
+11 inputs = inputs.to(device)
+12 labels = labels.to(device)
+13
+7
+
+=== PAGE 19 ===
+CHƯƠNG 4. TRIỂN KHAI V À THỰC NGHIỆM
+14 # 1. Xóa gradient ũc
+15 optimizer.zero_grad()
+16
+17 # 2. Lan ềtruyn xuôi ( Forward pass )
+18 outputs = model(inputs)
+19 loss = criterion(outputs, labels)
+20
+21 # 3. Lan ềtruyn ượngc và ậcp ậnht ọtrng ốs
+22 loss.backward()
+23 optimizer.step()
+24
+25 # 4. ốThng kê sai ốs và độ chính xác
+26 running_loss += loss.item() * inputs.size(0)
+27 _, preds = torch. max(outputs, 1)
+28 correct_samples += torch. sum(preds == labels.data).item()
+29 total_samples += inputs.size(0)
+30
+31 epoch_loss = running_loss / total_samples
+32 epoch_acc = correct_samples / total_samples
+33 return epoch_loss, epoch_acc
+Listing 4.1: Mã nguồn Python thực hiện một epoch huấn luyện mô hình AI
+Như thể hiện trong Đoạn mã 4.1 , toàn bộ quá trình tính toán đạo hàm được tự
+động hóa bằng cơ chế Autograd của PyTorch, giúp tối ưu hiệu năng tính toán trên card
+đồ họa.
+4.3. Kết quả thực nghiệm và phân tích
+Để đánh giá tính hiệu quả của mô hình, các độ đo định lượng chuẩn bao gồm: Độ
+chính xác (Accuracy), Độ chuẩn xác (Precision), Độ thu hồi (Recall) và Điểm F1-score
+được ghi nhận chi tiết trên tập kiểm thử (Test set).
+Bảng 4.1 tổng hợp kết quả so sánh giữa mô hình cơ sở (Baseline) và mô hình đề
+xuất sau khi áp dụng các kỹ thuật tăng cường dữ liệu.
+Số liệu từ Bảng 4.1 chỉ ra rằng việc áp dụng phương pháp tinh chỉnh trọng số (fine-
+tuning) kết hợp các kỹ thuật tiền xử lý thích hợp đã cải thiện đáng kể độ chính xác toàn
+cục (tăng từ 84.5% lên 93.6%), đồng thời giảm thiểu hiện tượng quá khớp (overfitting).
+8
+
+=== PAGE 20 ===
+CHƯƠNG 4. TRIỂN KHAI V À THỰC NGHIỆM
+Bảng 4.1: Kết quả thực nghiệm của các cấu hình mô hình trên tập kiểm thử
+Kiến trúc mô hình Acc Prec Rec F1 Đánh giá kết quả
+Baseline CNN 84.5% 83.8% 84.1% 83.9% Mô hình cơ sở chưa tăng
+cường dữ liệu
+CNN + Augment 89.2% 88.7% 89.0% 88.8% Bổ sung lật ảnh và xoay
+ngẫu nhiên
+Fine-tuned Model 93.6% 93.1% 93.4% 93.2% Hiệu năng tối ưu trên
+tập kiểm thử
+4.4. Đóng gói và triển khai ứng dụng
+Sau khi hoàn tất quá trình huấn luyện và chọn lọc trọng số tối ưu, mô hình được
+lưu trữ dưới định dạng chuẩn ( .pt hoặc .onnx) và tích hợp vào module giao diện người
+dùng. Ứng dụng cho phép tải ảnh, kiểm tra định dạng và hiển thị kết quả trực tiếp với
+độ trễ phản hồi trung bình chỉ 180 ms, hoàn toàn đáp ứng mục tiêu đặt ra.
+9
+
+=== PAGE 21 ===
+CHƯƠNG 5
+ĐÁNH GIÁ V À KẾT LUẬN
+5.1. Các kết quả đạt được
+Sau thời gian nghiên cứu và thực hiện đề tài “XÂY DỰNG ỨNG DỤNG AI
+NHẬN DIỆN HÌNH ẢNH” trong khuôn khổ học phần PHÁT TRIỂN ỨNG
+DỤNG AI , đề tài đã hoàn thành các mục tiêu đề ra ban đầu:
+1) Về mặt lý thuyết: Đã tổng hợp và hệ thống hóa được các kiến thức nền tảng về
+học máy, học sâu và quy trình xây dựng các mô hình nhận diện mẫu hình ảnh.
+2) Về mặt dữ liệu: Đã xây dựng quy trình thu thập, làm sạch và chuẩn hóa dữ liệu
+ảnh bảo đảm tính cân bằng giữa các lớp.
+3) Về mặt mô hình: Đã huấn luyện thành công mô hình đạt độ chính xác trên 93%
+trên tập kiểm thử độc lập.
+4) Về mặt ứng dụng: Đã đóng gói mô hình thành một sản phẩm phần mềm hoàn
+chỉnh, giao diện thân thiện, dễ sử dụng và có khả năng chạy ổn định trên môi trường
+máy tính cục bộ.
+5.2. Đánh giá ưu điểm và hạn chế
+5.2.1. Ưu điểm
+• Hệ thống có kiến trúc mô-đun hóa rõ ràng, dễ bảo trì và mở rộng thêm các lớp
+nhận diện mới.
+• Tốc độ xử lý suy luận nhanh, phù hợp với các ứng dụng tương tác thời gian thực.
+• Sử dụng các công nghệ mã nguồn mở phổ biến, đảm bảo tính kế thừa cao.
+5.2.2. Hạn chế còn tồn tại
+• Độ chính xác có xu hướng suy giảm khi ảnh đầu vào bị mờ, nhiễu hoặc có điều
+kiện ánh sáng quá yếu.
+10
+
+=== PAGE 22 ===
+CHƯƠNG 5. ĐÁNH GIÁ V À KẾT LUẬN
+• Kích thước tập dữ liệu huấn luyện còn giới hạn, chưa bao quát được toàn bộ các
+trường hợp ngoại lệ trong môi trường thực tế phức tạp.
+5.3. Hướng phát triển trong tương lai
+Dựa trên những hạn chế đã chỉ ra, các hướng phát triển tiếp theo của đề tài bao
+gồm:
+a) Thu thập bổ sung các trường hợp dữ liệu biên (edge cases) và áp dụng các kỹ thuật
+tổng hợp ảnh nhân tạo để làm phong phú dữ liệu huấn luyện.
+b) Nghiên cứu áp dụng các kỹ thuật nén mô hình như lượng tử hóa (Quantization) và
+tỉa thưa (Pruning) để giảm dung lượng mô hình, cho phép triển khai trên thiết bị
+nhúng và di động.
+c) Nâng cấp giao diện người dùng thành ứng dụng Web đa nền tảng và triển khai dưới
+dạng dịch vụ Cloud API sử dụng Docker.
+5.4. Lời kết
+Học phần PHÁT TRIỂN ỨNG DỤNG AI đã trang bị những kiến thức thực
+tế và kỹ năng giải quyết bài toán kỹ thuật rất thiết thực cho sinh viên ngành Công nghệ
+Thông tin. Việc hoàn thành đề tài này không chỉ củng cố nền tảng chuyên môn về trí tuệ
+nhân tạo mà còn giúp sinh viên rèn luyện tư duy phân tích hệ thống, kỹ năng lập trình
+và phong cách nghiên cứu khoa học nghiêm túc.
+11
+
+=== PAGE 23 ===
+TÀI LIỆU THAM KHẢO
+[1] I. Goodfellow, Y. Bengio, and A. Courville, Deep Learning. Cambridge, MA, USA:
+MIT Press, 2016, http://www.deeplearningbook.org.
+[2] K. He, X. Zhang, S. Ren, and J. Sun, “Deep residual learning for image recognition,”
+IEEE Transactions on Pattern Analysis and Machine Intelligence , vol. 38, no. 12, pp.
+2450–2461, 2016.
+[3] A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez, Ł. Kaiser,
+and I. Polosukhin, “Attention is all you need,” in Advances in Neural Information
+Processing Systems (NeurIPS 2017) , vol. 30, 2017, pp. 5998–6008.
+[4] A. Paszke, S. Gross, F. Massa, A. Lerer, J. Bradbury, G. Chanan, T. Killeen, Z. Lin,
+N. Gimelshein, L. Antiga, A. Desmaison, A. Kopf, E. Yang, Z. DeVito, M. Raison,
+A. Tejani, S. Chilamkurthy, B. Steiner, L. Fang, J. Bai, and S. Chintala, “PyTorch:
+An imperative style, high-performance deep learning library,” in Advances in Neural
+Information Processing Systems (NeurIPS 2019) , vol. 32, 2019, pp. 8024–8035.
+[5] J. Deng, W. Dong, R. Socher, L.-J. Li, K. Li, and L. Fei-Fei, “ImageNet: A large-
+scale hierarchical image database,” IEEE Conference on Computer Vision and Pattern
+Recognition (CVPR), 2009, truy cập tại: https://www.image-net.org.
+12
+
+=== PAGE 24 ===
+CHƯƠNG A
+MÃ NGUỒN CHƯƠNG TRÌNH
+A.1. Liên kết kho mã nguồn (Repository)
+Toàn bộ mã nguồn, dữ liệu mẫu và tài liệu hướng dẫn chi tiết của dự án được lưu
+trữ công khai tại kho chứa mã nguồn GitHub:
+• Địa chỉ repository: https://github.com/ictu-fit/ai-app-template
+• Nhánh chính (Main branch): main
+• Giấy phép mã nguồn: MIT License
+A.2. Cấu trúc thư mục dự án phần mềm
+Dưới đây là sơ đồ tổ chức thư mục của dự án phần mềm ứng dụng AI:
+1 AI_Application/
+2 |-- data/ # ưTh ụmc ưlu ữtr ậtp ữd ệliu (train, val, test)
+3 |-- models/ # Định ĩngha các ếkin trúc ạmng ơn-ron
+4 | |-- __init__.py
+5 | |-- backbone.py # Module trích ấxut đặc ưtrng
+6 | ‘-- classifier.py # Module phân ạloi
+7 |-- weights/ # ệTp ọtrng ốs mô hình đã ấhun ệluyn (.pt, .onnx)
+8 |-- utils/ # Các hàm ệtin ích ềtin ửx lý ữd ệliu và ẽv đồ ịth
+9 | |-- dataset.py
+10 | ‘-- metrics.py
+11 |-- ui/ # Giao ệdin ườngi dùng (Streamlit / PyQt)
+12 | ‘-- app.py
+13 |-- train.py # Script ạchy quá trình ấhun ệluyn
+14 |-- evaluate.py # Script đánh giá mô hình trên ậtp test
+15 |-- requirements.txt # Danh sách các ưth ệvin ụph ộthuc
+16 ‘-- README.md # ướHng ẫdn ổtng quan ềv ựd án
+Listing A.1: Cấu trúc cây thư mục mã nguồn phần mềm ứng dụng AI
+13
+
+=== PAGE 25 ===
+CHƯƠNG B
+HƯỚNG DẪN CÀI ĐẶT V À V ẬN HÀNH
+B.1. Yêu cầu hệ thống
+Để triển khai và vận hành ứng dụng AI, hệ thống cần đáp ứng các yêu cầu tối thiểu
+sau:
+• Hệ điều hành: Windows 10/11 64-bit, Ubuntu 20.04+ hoặc macOS 12+.
+• Python: Phiên bản 3.9 trở lên (khuyến nghị 3.10 hoặc 3.11).
+• Bộ nhớ RAM: Tối thiểu 8 GB RAM (khuyến nghị 16 GB).
+• Card đồ họa (Tùy chọn): GPU NVIDIA hỗ trợ CUDA Compute Capability
+7.0+.
+B.2. Các bước cài đặt môi trường
+B.2.1. Bước 1: Khởi tạo môi trường ảo (Virtual Environment)
+Mở terminal và thực thi các câu lệnh sau để tạo và kích hoạt môi trường ảo:
+1 # ạTo môi ườtrng ảo tên là .venv
+2 python -m venv .venv
+3
+4 # Kích ạhot trên Windows ( PowerShell ):
+5 .venv\Scripts\Activate.ps1
+6
+7 # Kích ạhot trên Linux / macOS :
+8 source .venv/bin/activate
+Listing B.1: Tạo và kích hoạt môi trường ảo Python
+B.2.2. Bước 2: Cài đặt các thư viện cần thiết
+Cài đặt toàn bộ dependencies thông qua tệp requirements.txt:
+14
+
+=== PAGE 26 ===
+PHỤ LỤC B. HƯỚNG DẪN CÀI ĐẶT V À V ẬN HÀNH
+1 pip install --upgrade pip
+2 pip install -r requirements.txt
+Listing B.2: Cài đặt gói phụ thuộc bằng pip
+B.3. Khởi chạy ứng dụng giao diện
+Sau khi hoàn tất cài đặt, khởi chạy module giao diện người dùng bằng lệnh:
+1 python -m streamlit run ui/app.py
+Listing B.3: Lệnh khởi chạy ứng dụng giao diện
+Sau đó truy cập vào trình duyệt web tại địa chỉ cục bộ: http://localhost:8501.
+15
+
+=== PAGE 27 ===
+CHƯƠNG C
+KẾT QUẢ THỰC NGHIỆM V À SIÊU THAM SỐ
+C.1. Bảng tổng hợp siêu tham số huấn luyện (Hyperparameters)
+Bảng C.1 cung cấp chi tiết toàn bộ các giá trị siêu tham số được thiết lập trong
+quá trình huấn luyện mô hình nhằm đảm bảo tính tái lập (reproducibility) của các thí
+nghiệm.
+Bảng C.1: Bảng thiết lập các siêu tham số huấn luyện mô hình
+Tham số Giá trị thiết lập Mục đích / Ý nghĩa
+Thuật toán tối ưu (Optimizer) AdamW Cải thiện khả năng tổng quát
+hóa với weight decay
+Tốc độ học cơ sở (Base LR) 1 × 10−4 Bước cập nhật trọng số trong
+không gian gradient
+Weight Decay 1 × 10−2 Ngăn chặn hiện tượng bùng nổ
+trọng số (Regularization)
+Batch Size 32 Kích thước bó dữ liệu trên mỗi
+bước cập nhật
+Số lượng Epochs 50 Tổng số lượt duyệt qua toàn bộ
+tập huấn luyện
+Kích thước ảnh đầu vào 224 × 224 Chuẩn hóa chiều rộng × chiều
+cao ảnh RGB
+Chính sách học (LR Scheduler) CosineAnnealingLR Giảm dần tốc độ học mượt mà
+theo chu kỳ
+C.2. Ghi chú bổ sung về kiểm thử
+Các thí nghiệm được tiến hành lặp lại 3 lần với 3 hạt giống ngẫu nhiên (random
+seeds: 42, 123, 999). Các số liệu trình bày trong báo cáo đại diện cho giá trị trung bình
+của các lượt thử nghiệm độc lập này.
+16
+

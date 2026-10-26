@@ -74,13 +74,12 @@ services:
     image: dpage/pgadmin4:latest
     container_name: library_pgadmin
     restart: always
-    security_opt:
-      - no-new-privileges:true
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@library.com}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin_password_123}
+      PGADMIN_LISTEN_PORT: 8080
     ports:
-      - "5050:80"
+      - "5050:8080"
     depends_on:
       postgres:
         condition: service_healthy
